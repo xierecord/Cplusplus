@@ -1,0 +1,58 @@
+// https://zh.cppreference.com/w/cpp/types/numeric_limits
+// https://zh.cppreference.com/w/c/types/limits
+// http://www.cplusplus.com/reference/climits/
+// http://www.cplusplus.com/reference/cfloat/
+
+#include <iostream>
+#include <climits>
+#include <cfloat>
+
+using namespace std;
+
+int main()
+{
+    cout << "\nBase Type " << "( 1 Byte = " << CHAR_BIT << " bit ):" << endl << endl;
+    cout << "Type\t" << '\t' << "Bytes" << '\t' << "min" << "\t\t" << "max" << endl;
+
+    cout << "void" << endl;
+    cout << "std::nullptr_t" << endl;
+    cout << endl;
+
+    cout << "bool: \t\t" << sizeof(bool) << '\t' << false << "\t\t" << true << endl;
+    cout << "char: \t\t" << sizeof(char) << '\t' << CHAR_MIN << "\t\t" << CHAR_MAX << endl;
+    cout << "wchar_t: \t" << sizeof(wchar_t) << '\t' << WCHAR_MIN << "\t\t" << WCHAR_MAX << endl;
+    cout << "char8_t: \t" << sizeof(char8_t) << '\t' << 0 << "\t\t" << 	UCHAR_MAX << endl;
+    cout << "char16_t: \t" << sizeof(char16_t) << '\t' << 0 << "\t\t" << UINT_LEAST16_MAX << endl;
+    cout << "char32_t: \t" << sizeof(char32_t) << '\t' << 0 << "\t\t" << UINT_LEAST32_MAX << endl;
+    cout << endl;
+
+    cout << "short: \t\t" << sizeof(short) << '\t' << SHRT_MIN << "\t\t" << SHRT_MAX << endl;
+    cout << "int: \t\t" << sizeof(int) << '\t' << INT_MIN << '\t' << INT_MAX << endl;
+    cout << "long: \t\t" << sizeof(long) << '\t' << LONG_MIN << '\t' << LONG_MAX << endl;
+    cout << "long long: \t" << sizeof(long long) << '\t' << LLONG_MIN << '\t' << LLONG_MAX << endl;
+    cout << "size_t: \t" << sizeof(size_t) << '\t' << 0 << "\t\t"  << std::numeric_limits<size_t>::max() << endl;
+    cout << endl;
+
+    cout << "Type\t" << '\t' << "Bytes" << '\t' << "lowest" << "\t\t" << "min" << "\t\t" << "max" << endl;
+    cout << "float: \t\t" << sizeof(float) << "\t" << -FLT_MAX << "\t" << FLT_MIN << '\t' << FLT_MAX << endl;
+    cout << "double: \t" << sizeof(double) << "\t" << -DBL_MAX << "\t" << DBL_MIN << '\t' << DBL_MAX << endl;
+    cout << "long double: \t" << sizeof(long double) << "\t" << -LDBL_MAX << "\t" << LDBL_MIN << '\t' << LDBL_MAX << endl;
+    std::cout << "float\t\t"
+              << sizeof(float) << '\t'
+              << std::numeric_limits<float>::lowest() << '\t'
+              << std::numeric_limits<float>::min() << '\t'
+              << std::numeric_limits<float>::max() << '\n';
+    std::cout << "double\t\t"
+              << sizeof(double) << '\t'
+              << std::numeric_limits<double>::lowest() << '\t'
+              << std::numeric_limits<double>::min() << '\t'
+              << std::numeric_limits<double>::max() << '\n';
+    std::cout << "long double\t"
+              << sizeof(long double) << '\t'
+              << std::numeric_limits<long double>::lowest() << '\t'
+              << std::numeric_limits<long double>::min() << '\t'
+              << std::numeric_limits<long double>::max() << '\n';
+    cout << endl;
+
+    return 0;
+}
