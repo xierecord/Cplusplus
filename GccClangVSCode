@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>配置 GCC / Clang / VS Code 的 C / C++ 开发环境</title>
+    <style>
+        header {
+            font-size: 2rem;
+            text-align: center;
+        }
+
+        .subTitle {
+            font-weight: bolder;
+        }
+
+        ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .introduction::before {
+            content: "  ";
+        }
+
+        textarea {
+            resize: none;
+        }
+    </style>
+</head>
+<body>
+    <header>Windows 中配置 GCC / Clang / VS Code 的 C / C++ 开发环境</header>
+    <p></p>
+    <main>
+        <section>
+            <span class="introduction">
+                随着 C++20 / C18 标准的发布，C++ 的功能日益增强，因此，我们有必要配置一个适合学习 C18 / C++20 的开发环境。如果是实际开发可以直接选择
+                <a href="https://visualstudio.microsoft.com/zh-hans/downloads/">Visual C++</a> 或 <a href="https://download.qt.io/official_releases/">QT</a> ，如果是为了学习语言的话，就没必要安装这些好几G又复杂的软件了。
+            </span>
+        </section>
+
+        <section>
+            <p class="subTitle introduction">一、安装 C / C++ 编译器</p>
+            <ul>
+                <li class="introduction">Windows 下 C / C++ 编译器主要有以下三款：</li>
+                <li class="introduction">1. <a href="https://visualstudio.microsoft.com/zh-hans/downloads/">Visual C++</a>: 可以通过 <a href="https://visualstudio.microsoft.com/zh-hans/downloads/">Visual Studio 生成工具</a> 安装，它虽然功能强大，但是体积庞大，不跨平台。</li>
+                <li class="introduction">2. <a href="https://www.gnu.org/software/gcc/">GCC</a>: 自由免费的编译器，比 Clang 支持更多平台，更多语言；更流行，更广泛使用。新的 GCC 10.1 编译器已对 C++20 的主要功能 ( 协程CoRoutines, 概念concepts, 模块modules, spaceship 操作符, 范围Ranges 等 ) 提供了初步支持，在 C++20 模式( std=c++20 ) 中运行时，默认下会启用 C++20 的主要功能。</li>
+                <li class="introduction">3. <a href="https://releases.llvm.org/download.html">LLVM Clang</a>: 开源免费的编译器，比 GCC 编译速度快，存储占用小，出错提示更友好。<span class="subTitle">在 Windows 下，运行 Clang 编译时要使用 MSVC 或 GCC 的库文件，因此，要先安装它们二者之一。</span>(Linux / MAC 下不需要)</li>
+            </ul>
+            <p></p>
+            <ul>
+                <li class="introduction">所以首先安装 GCC ，可以下载 <a href="https://mingw-w64.org/doku.php/download">mingw-w64</a> 或 <a href="https://jmeubank.github.io/tdm-gcc/">TDM-GCC</a> 之一进行安装，其中 <a href="https://www.msys2.org/">MSYS2</a> 的安装步骤看 <a href="https://www.cnblogs.com/XieSir/articles/11921800.html">这儿</a> 。安装完后运行 g++ -v ，如果显示 gcc 的版本则安装成功。</li>
+                <li class="introduction">现在可以使用 g++ filename.cpp -o filenamegcc.exe 编译 C / C++ 源程序了。</li>
+                <p></p>
+                <li class="introduction">然后下载 <a href="https://releases.llvm.org/download.html">Clang</a> 安装。安装完后运行 clang++ -v ，如果显示 clang 的版本则安装成功。</li>
+                <li class="introduction">现在可以使用 clang++ filename.cpp -o filenameclang.exe 编译 C / C++ 源程序了。如果显示 fatal error: 'iostream' file not found 的错误，则需要将 gcc 头文件夹 (“例如：C:\TDM-GCC-64\lib\gcc\x86_64-w64-mingw32\9.2.0\include\c++ ”) 加入到 PATH 系统环境变量中。</li>
+                <li class="introduction">如果仍旧报错，查看 clang++ -v 运行结果，可知预编译的 Clang 默认Target为 x86_64-pc-windows-msvc，是配合msvc编译器使用的，要让 Clang 使用 MinGW，需要为 Clang 指定命令行选项 –target，这里可以使用 --target=x86_64-pc-windows-gnu、 --target=x86_64-w64-mingw32，或者 --target=x86_64-w64-windows-gnu。</li>
+                <p></p>
+                <li class="introduction">如果嫌以上步骤麻烦，也可以直接下载 <a href="https://github.com/brechtsanders/winlibs_mingw/releases">winlibs</a> 解压，并添加 Path ，即可。</li>
+            </ul>
+        </section>
+
+        <section>
+            <p class="subTitle introduction">二、安装并配置 VS Code 编辑器</p>
+            <ul>
+                <li class="introduction">Windows 下 C / C++ 轻量级编辑器主要有以下五款：</li>
+                <li class="introduction">1. <a href="https://www.jetbrains.com/clion/">CLion</a>: 强大但收费。</li>
+                <li class="introduction">2. <a href="https://code.visualstudio.com/">Visual Studio Code</a>: 自由免费，强大，好看。</li>
+                <li class="introduction">3. <a href="https://downloads.codelite.org/">CodeLite</a>: 开源免费。</li>
+                <li class="introduction">4. <a href="https://www.codeblocks.org/downloads/26">Code::Blocks</a>: 开源免费，但是快捷键不通用。</li>
+                <li class="introduction">5. <a href="https://sourceforge.net/projects/orwelldevcpp/files/">Dev-C++</a>: 自由免费，但是没有智能补全功能。</li>
+            </ul>
+            <p></p>
+            <ul>
+                <li class="introduction">下载安装 <a href="https://code.visualstudio.com/">VS Code</a>。 </li>
+                <li class="introduction">在 VSCode 的扩展 (Ctrl+Shift+X) 里搜索 (Microsoft 开发的) Chinese (Simplified) Language Pack ，安装重启 VSCode ，即可汉化 VSCode 。</li>
+                <li class="introduction">在 VSCode 的扩展里搜索 (Microsoft 开发的) C/C++ ，安装重启 VSCode。</li>
+                <li class="introduction">然后从 VSCode 主菜单中选择 "终端 > 配置默认生成任务"。在下拉列表中列出了C++编译器的各种预定义的生成任务。选择 " g++.exe build active file" ，生产一个 <strong>tasks.json</strong> 文件，用于编译生成说明，修改内容如下：</li>
+                <p></p>
+                <li class="introduction">针对 GCC 版：</li>
+                <li>
+                    <textarea name="" id="" cols="150" rows="41">
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "shell: g++.exe build active file",
+            "command": "C:\\TDM-GCC-64\\bin\\g++.exe",
+            "args": [
+                "-g",	 // 生成和调试有关的信息
+                "-fexec-charset=GBK",        // 指定执行程序时，使用 GBK 编码输出，以便和 Windows 的 cmd 命令行兼容
+                "${file}",	// 指定编译的源程序为当前文件，要想编译多个文件可以改为 *.cpp 等
+                "-o",	// 指定编译后的执行文件名，不加该参数则默认输出a.exe 
+                "${fileDirname}\\${fileBasenameNoExtension}.exe"	// 指定编译后的执行文件存储在源文件夹，文件名与源文件名相同
+            ],
+            "options": {
+                "cwd": "C:\\TDM-GCC-64\\bin"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true	// Ctrl+Shift+B 运行程序，为 false 则通过"终端：运行生成任务"运行它
+            }
+        },
+        {
+            "type": "shell",
+            "label": "g++.exe build active file",
+            "command": "C:\\TDM-GCC-64\\bin\\g++.exe",
+            "args": [
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}\\${fileBasenameNoExtension}.exe"
+            ],
+            "options": {
+                "cwd": "C:\\TDM-GCC-64\\bin"
+            }
+        }
+    ]
+}
+                    </textarea>
+                </li>
+                <li class="introduction">针对 Clang 版：</li>
+                <li>
+                    <textarea name="" id="" cols="150" rows="50">
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "shell: clang++.exe build active file",
+            "command": "C:\\Program Files\\LLVM\\bin\\clang++.exe",
+            "args": [
+                // "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}\\${fileBasenameNoExtension}.exe",
+                "-lm",
+                "-g", // 生成和调试有关的信息
+                "-Wall", // 开启额外警告
+                // "-static-libgcc", // 静态链接, 出现报错 ld.exe: cannot find -lgcc_eh
+                // "-fcolor-diagnostics",
+                "--target=x86_64-w64-windows-gnu", // 默认target为msvc，不加这一条就会找不到头文件
+                "-std=c++20"	// 使用 C++ 语言最新标准 C++20 进行编译，也可以设置成 C++11, C++17 等
+            ],
+            "options": {
+                "cwd": "C:\\Program Files\\LLVM\\bin"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "type": "shell",
+            "label": "shell: g++.exe build active file",
+            "command": "C:\\TDM-GCC-64\\bin\\g++.exe",
+            "args": [
+                "-g",
+                "-fexec-charset=GBK",
+                "${file}",
+                "-o",
+                "${fileDirname}\\${fileBasenameNoExtension}.exe"
+            ],
+            "options": {
+                "cwd": "C:\\TDM-GCC-64\\bin"
+            }
+        }
+    ]
+}
+                    </textarea>
+                </li>
+
+                <p></p>
+                <li class="introduction">再从主菜单中，选择 "运行>添加配置..."，创建一个 <strong>launch.json</strong> 文件，里面是调试参数，配置好后就可以按 F5 进行调试了，内容如下：</li>
+                <li class="introduction">针对 GCC 版：</li>
+                <li>
+                    <textarea name="" id="" cols="150" rows="32">
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "(gdb) 启动",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",	// 要调试的文件
+            // "program": "输入程序名称，例如 ${workspaceFolder}/a.exe",
+            "args": [],
+            "stopAtEntry": true,	// 在断点处停下来
+            // "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": true,
+            "MIMode": "gdb",
+            "miDebuggerPath": "C:\\TDM-GCC-64\\bin\\gdb.exe",
+            // "miDebuggerPath": "/path/to/gdb",
+            "setupCommands": [
+                {
+                    "description": "为 gdb 启用整齐打印",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        }
+    ]
+}
+                    </textarea>
+                </li>
+                <li class="introduction">针对 Clang 版：</li>
+                <li>
+                    <textarea name="" id="" cols="150" rows="32">
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "(lldb) 启动",	// 配置名称，将会在启动配置的下拉菜单中显示
+            "type": "cppdbg",	// 配置类型
+            "request": "launch",	// 请求配置类型，可以为launch（启动）或attach（附加）
+            "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",	// 将要进行调试的程序的路径
+            // "program": "输入程序名称，例如 ${workspaceFolder}/a.exe",
+            "args": [],	// 程序调试时传递给程序的命令行参数，一般设为空即可
+            "stopAtEntry": false,	// 设为true时程序将暂停在程序入口处
+            "cwd": "${workspaceFolder}",	// 调试程序时的工作目录
+            "environment": [],
+            "externalConsole": true,	// 调试时是否显示控制台窗口
+            "MIMode": "gdb",	// 指定连接的调试器，可以为gdb或lldb。但目前lldb在windows下没有预编译好的版本。
+            // "miDebuggerPath": "C:\\Program Files\\LLVM\\bin\\lldb.exe",  // 无法进入 F5 的调试
+            "miDebuggerPath": "C:\\TDM-GCC-64\\bin\\gdb.exe",		// 调试器的路径，注意要与MinGw的路径对应
+            // "miDebuggerPath": "/path/to/gdb",
+            "setupCommands": [
+                {
+                    "description": "为 gdb 启用整齐打印",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        }
+    ]
+}
+                    </textarea>
+                </li>
+                <p></p>
+
+                <li class="introduction">按快捷键 Ctrl + Shift + p 打开命令面板进一步<a href="https://code.visualstudio.com/docs/cpp/config-mingw">配置</a> VSCode，选择 C/Cpp: Edit Configuration ... ，就会在当前编辑器打开 <strong>c_cpp_properties.json</strong> 文件，这个文件就是用于配置编译器路径，用于自动感知以及函数跳转，内容如下：</li>
+                <li class="introduction">针对 GCC 版：</li>
+                <li>
+                    <textarea name="" id="" cols="150" rows="22">
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**"	// 添加不在标准库路径中的标头文件的位置
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "compilerPath": "C:\\TDM-GCC-64\\bin\\g++.exe",	// 该设置是配置中的一个重要设置。通过它推断C++标准库头文件的路径，以此提供智能完成和转到定义导航。
+            "cStandard": "c18",	// C编译版本
+            "cppStandard": "gnu++20",	// C++编译版本
+            "intelliSenseMode": "clang-x64"
+        }
+    ],
+    "version": 4
+}
+                    </textarea>
+                </li>
+                <li class="introduction">针对 Clang 版：</li>
+                <li>
+                    <textarea name="" id="" cols="150" rows="22">
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "C:\\TDM-GCC-64\\lib\\gcc\\x86_64-w64-mingw32\\9.2.0\\include\\c++"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "compilerPath": "C:\\TDM-GCC-64\\bin\\g++.exe",
+            "cStandard": "c18",
+            "cppStandard": "gnu++20",
+            "intelliSenseMode": "clang-x64"
+        }
+    ],
+    "version": 4
+}
+                    </textarea>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <p class="subTitle introduction">三、汉字乱码的处理</p>
+            <ul>
+                <li class="introduction">在 cmd 命令行中运行程序时，由于 cmd 命令行默认使用 UNICODE 编码，而 C/C++ 编译出的程序默认使用 UTF-8 编码，所以运行程序如果包含汉字，就会出现乱码。解决方法有以下三种：</li>
+                <li class="introduction">1. 如果使用 g++ 编译程序，可以按上面 tasks.json 文件添加 "-fexec-charset=GBK" 参数，将输出改成 GBK 编码即可。不过 clang++ 只支持 UTF-8 编码，因此此方法无效。</li>
+                <li class="introduction">2. 如果电脑只是运行 clang++ 来编译程序，可以简单的 设置 -> 时间和语言 -> 区域 -> 其它日期、时间和区域设置 -> 更改日期、时间或数字格式 -> 管理 -> 更改系统区域设置 -> 勾选 "Beta 版: ... "，即可。不过，这个方法直接修改了系统的 cmd 编码，可能导致其他程序乱码，要小心使用。</li>
+                <li class="introduction">3. (推荐) 下载 <a href="https://github.com/cmderdev/cmder/releases">Cmder Mini</a> (也可以使用 <a href="https://github.com/microsoft/terminal/releases">Windows Terminal</a> ) ，打开 cmder，按下快捷键 Win + Alt + P，在 Settings-->Startup-->Environment 下加入</li>
+                <textarea name="" id="" cols="80" rows="2">
+chcp utf-8
+set LANG=zh_CN.UTF-8
+                </textarea>
+                <li class="introduction">将 cmder 的字符编码改为 UTF-8，这样，以后 clang 编译的程序都可以在 cmder 中执行，就不会影响其他程序的运行了。<li class="introduction"></li>
+            </ul>
+        </section>
+
+        <section>
+            <p class="subTitle introduction">四、测试代码</p>
+            <ul>
+                <textarea name="" id="" cols="150" rows="118">
+#include <iostream>
+#include <iomanip>      // std::setw
+#include <vector>
+
+// 一维数组 输出 杨辉三角形
+int main()
+{
+    using std::cout;
+    using std::endl;
+    using std::setw;
+    using std::vector;
+
+    constexpr size_t Line = 16;
+    constexpr unsigned W = 5;
+
+    size_t i, j;
+    int n[Line+1];
+
+    cout << "\t\tPascal 三角形\n" << endl;
+
+    cout << setw(W) << (n[1] = 1) << endl;
+    for (i = 2; i != Line+1; ++i)
+    {
+        cout << setw(W) << (n[i] = 1);
+        for (j = i-1; j != 1; --j)
+            cout << setw(W) << (n[j] += n[j-1]);
+        cout << setw(W) << n[1] << endl;
+    }
+    cout << endl << endl;
+
+    using std::begin;
+    using std::end;
+    cout << setw(W) << (n[1] = 1) << endl;
+    for (int *pl = begin(n)+2; pl != end(n); ++pl)
+    {
+        cout << setw(W) << (*pl = 1);
+        for (int *pr = pl-1; pr != begin(n)+1; --pr)
+            cout << setw(W) << (*pr += *(pr-1));
+        cout << setw(W) << n[1] << endl;
+    }
+    cout << endl << endl;
+
+    int nn[Line] = {0}, t;
+    bool beg = true;
+    for (auto ll : nn)
+    {
+        beg = true;
+        for (auto &mm : nn)
+            if (beg && mm == 1)
+            {
+                cout << setw(W) << (t = mm = 1);
+                beg = false;
+            }
+            else if (mm == 0)
+            {
+                cout << setw(W) << (mm = 1) << endl;
+                break;
+            }
+            else
+            {
+                cout << setw(W) << (mm += t);
+                t = mm-t;
+            }
+    }
+    cout << endl << endl;
+
+
+    vector<unsigned> v(Line, 0);
+
+    cout << setw(W) << (v[0] = 1) << endl;
+    for (i = 1; i != Line; ++i)
+    {
+        cout << setw(W) << (v[i] = 1);
+        for (j = i-1; j != 0; --j)
+            cout << setw(W) << (v[j] += v[j-1]);
+        cout << setw(W) << v[0] << endl;
+    }
+    cout << endl << endl;
+
+    for (auto &ll : v)
+    {
+        ll = 0;
+        beg = true;
+        for (auto &mm : v)
+            if (beg && mm == 1)
+            {
+                cout << setw(W) << (t = mm = 1);
+                beg = false;
+            }
+            else if (mm == 0)
+            {
+                cout << setw(W) << (mm = 1) << endl;
+                break;
+            }
+            else
+            {
+                cout << setw(W) << (mm += t);
+                t = mm-t;
+            }
+    }
+    cout << endl << endl;
+
+    cout << setw(W) << (v[0] = 1) << endl;
+    for (vector<unsigned>::iterator it = v.begin()+1; it != v.end(); ++it)
+    {
+        cout << setw(W) << (*it = 1);
+        for (vector<unsigned>::reverse_iterator rit(it); rit != v.rend()-1; ++rit)
+            cout << setw(W) << (*rit += *(rit+1));
+        cout << setw(W) << *(v.cbegin()) << endl;
+    }
+    cout << endl << endl;
+
+    return 0;
+}
+                </textarea>
+            </ul>
+        </section>
+
+    </main>
+    <footer></footer>
+</body>
+</html>
